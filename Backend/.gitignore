@@ -1,11 +1,6 @@
 # Ignore node_modules directory
-node_modules/
+/node_modules
 
-.env/
+.env
 
-# Ignore pacl directory at the root level
-pacl/
 
-# Ignore specific files at the root level
-package.json
-package-lock.json

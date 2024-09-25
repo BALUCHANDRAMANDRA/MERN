@@ -98,7 +98,6 @@ export const Login = () => {
   );
 };
 
-// Styled components code here...
 const Container = styled.main`
   height: 100vh;
   width: 100%;

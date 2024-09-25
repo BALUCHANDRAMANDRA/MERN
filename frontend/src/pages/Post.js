@@ -1,12 +1,13 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import XLogo from '../images/X-Logo.png'; 
+import { BiImage } from 'react-icons/bi';
 import axios from 'axios';
 
 export const Post = ({ onClose, onAddPost }) => {
     const [showText, setShowText] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
-    const [profileImageUrl, setProfileImageUrl] = useState(null); // For storing the object URL
+    const [profileImageUrl, setProfileImageUrl] = useState(null); 
     const textareaRef = useRef(null);
     const [content, setContent] = useState('');
 
@@ -89,7 +90,7 @@ export const Post = ({ onClose, onAddPost }) => {
                 <SubDiv>
                     <input type="file" id="fileInput" accept="image/jpeg, image/jpg, image/png, image/svg" style={{ display: 'none' }} onChange={handleFileChange} />
                     <Label htmlFor="fileInput">
-                        <Icon src={XLogo} alt="Upload" />
+                        <BiImage size={24} color="blue" />  
                     </Label>
                     <Icon src={XLogo} alt="Emoji" />
                     <Icon src={XLogo} alt="Gif" />
@@ -106,20 +107,26 @@ const Container = styled.div`
     height: auto !important;
     width: 100%;
     max-width: 500px;
-    position: absolute;
-    margin-left: 22rem;
-    margin-top: 10rem;
-    top: 10%;
+    position: fixed; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
     background-color: black;
     border-radius: 17px;
-    z-index: 100;
+    z-index: 1000; 
     padding: 10px;
 
     @media (max-width: 768px) {
-        width: 90%;
-        top: 5%;
+        width: 90%; 
+        max-width: 90%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000; 
+        padding: 20px; 
     }
 `;
+
 
 const Content = styled.div`
     position: relative;

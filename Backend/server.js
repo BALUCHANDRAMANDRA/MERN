@@ -21,9 +21,10 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-mongoose.connect('mongodb://127.0.0.1:27017/myapp')
+mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
+
 
 
 
@@ -62,7 +63,6 @@ const generateRefreshToken = (user) => {
     );
 };
 
-// Register endpoint
 app.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -98,21 +98,21 @@ app.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
 
     try {
-        // Check if user exists
+
         const existingUser = await User.findOne({ email });
 
         if (!existingUser) {
             return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
 
-        // Validate password
+    
         const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
         if (!isPasswordValid) {
             return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
 
-        // Generate JWT token
+        
         const token = jwt.sign(
             {
                 userId: existingUser.id,
@@ -140,7 +140,7 @@ app.post("/login", async (req, res, next) => {
 });
 
 
-// Refresh token endpoint
+
 app.post('/token', async (req, res) => {
     const refreshToken = req.body.refreshToken;
     if (!refreshToken) {
@@ -154,8 +154,6 @@ app.post('/token', async (req, res) => {
             return res.status(404).json({ msg: 'User not found' });
         }
 
-
-
         const accessToken = generateAccessToken(user);
         res.json({ success: true, token: accessToken });
     } catch (err) {
@@ -163,7 +161,6 @@ app.post('/token', async (req, res) => {
         res.status(403).json({ msg: 'Invalid refresh token' });
     }
 });
-
 
 app.get('/accessResource', authMiddleware, (req, res) => {
     res.status(200).json({
@@ -180,18 +177,18 @@ app.post('/posts', authMiddleware, upload.single('image'), async (req, res) => {
     try {
         const { content } = req.body;
         const userId = req.user.userId;
-        const username = req.user.username; // Fetch username from authenticated user
+        const username = req.user.username; 
 
         const newPost = new Post({
             content,
             image: req.file ? req.file.filename : null,
             userId,
-            username // Store username in the Post document
+            username 
         });
 
         await newPost.save();
         
-        // Return the saved post data with username included
+        
         res.status(201).json({ success: true, data: { ...newPost._doc, username } });
     } catch (err) {
         console.error(err.message);
@@ -199,16 +196,14 @@ app.post('/posts', authMiddleware, upload.single('image'), async (req, res) => {
     }
 });
 
-
-
 app.get('/get-posts', authMiddleware, async (req, res) => {
     try {
-        // Fetch posts and populate the userId field in both posts and comments
+        
         const posts = await Post.find()
-            .populate('userId', 'username email') // Populate the userId in posts
-            .populate('comments.userId', 'username email'); // Populate the userId in comments
+            .populate('userId', 'username email') 
+            .populate('comments.userId', 'username email'); 
 
-        // Map posts to include the image URL and username
+       
         const postsWithImageURL = posts.map(post => ({
             ...post._doc,
             image: post.image ? `${req.protocol}://${req.get('host')}/uploads/${post.image}` : null,
@@ -226,7 +221,6 @@ app.get('/get-posts', authMiddleware, async (req, res) => {
     }
 });
 
-
 app.patch('/like/:postId', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;
@@ -236,16 +230,15 @@ app.patch('/like/:postId', authMiddleware, async (req, res) => {
             return res.status(404).json({ msg: 'Post not found' });
         }
 
-        // Ensure likes and dislikes fields are initialized
+       
         if (!post.likes) post.likes = [];
         if (!post.dislikes) post.dislikes = [];
 
-        // Remove user from dislikes if they had previously disliked the post
+        
         if (post.dislikes.includes(userId)) {
             post.dislikes.pull(userId);
         }
 
-        // Add user to likes if they haven't liked the post yet
         if (!post.likes.includes(userId)) {
             post.likes.push(userId);
         }
@@ -267,16 +260,15 @@ app.patch('/dislike/:postId', authMiddleware, async (req, res) => {
             return res.status(404).json({ msg: 'Post not found' });
         }
 
-        // Ensure likes and dislikes fields are initialized
+        
         if (!post.likes) post.likes = [];
         if (!post.dislikes) post.dislikes = [];
 
-        // Remove user from likes if they had previously liked the post
+        
         if (post.likes.includes(userId)) {
             post.likes.pull(userId);
         }
 
-        // Add user to dislikes if they haven't disliked the post yet
         if (!post.dislikes.includes(userId)) {
             post.dislikes.push(userId);
         }
@@ -290,9 +282,6 @@ app.patch('/dislike/:postId', authMiddleware, async (req, res) => {
 });
 
 
-// server.js
-
-// Add a comment to a post
 app.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
     const { text } = req.body;
   
@@ -316,8 +305,6 @@ app.post('/posts/:postId/comments', authMiddleware, async (req, res) => {
   });
   
 
-
-// Delete a comment from a post
 app.delete('/posts/:postId/comments/:commentId', authMiddleware, async (req, res) => {
     try {
       const post = await Post.findById(req.params.postId);
@@ -346,10 +333,6 @@ app.delete('/posts/:postId/comments/:commentId', authMiddleware, async (req, res
     }
   });
   
-
-
-
-// New endpoint to delete a post
 app.delete('/posts/:id', authMiddleware, async (req, res) => {
     try {
         const postId = req.params.id;
@@ -393,15 +376,12 @@ app.get('/checkEmail/:email', async (req, res) => {
 });
 
 
-
-
-// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Server Error');
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

@@ -5,7 +5,8 @@ import { Post } from './Post';
 import axios from 'axios';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { FaBars } from "react-icons/fa6";
-import { FaTimes } from "react-icons/fa"; 
+import { FaTimes } from "react-icons/fa";
+import { formatDistanceToNow } from 'date-fns'; 
 
 export const Home = () => {
     const [showPopUp, setShowPopUp] = useState(false);
@@ -147,7 +148,7 @@ export const Home = () => {
             setFilteredPosts(updatedPosts.filter(post =>
                 post.username.toLowerCase().includes(searchKeyword.toLowerCase())
             ));
-            setCommentText(''); // Clear the comment input
+            setCommentText(''); 
         } catch (error) {
             console.error('Error adding comment:', error);
         }
@@ -179,6 +180,10 @@ export const Home = () => {
           [postId]: !prev[postId],
         }));
       };
+
+      const getTimeAgo = (createdAt) => {
+        return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
+    };
 
     return (
         <Container>
@@ -237,6 +242,7 @@ export const Home = () => {
               <PostContainer>
                 <PostHeader>
                   <Username>{post.username}</Username>
+                  <PostTime>{getTimeAgo(post.createdAt)}</PostTime>
                 </PostHeader>
                 <PostContent>{post.content}</PostContent>
                 <ImageWrapper>{post.image && <PostImage src={`http://localhost:4000/uploads/${post.image}`} alt="Post" />}</ImageWrapper>
@@ -331,7 +337,7 @@ const CloseButton = styled.button`
     
     @media (max-width: 768px) {
         margin-left: 120px;
-        display: block; /* Show on mobile devices */
+        display: block; 
         background: none;
         border: none;
         color: white;
@@ -340,8 +346,6 @@ const CloseButton = styled.button`
         font-size: 1.5rem;
     }
 `;
-
-
 
 
 const Start = styled.div`
@@ -428,18 +432,31 @@ const Img = styled.img`
     }
 `;
 
-const commonStyles = `
+const commonStyles = ` 
     margin-top: 5px;
-    padding: 10px 25px 10px 10px;
+    padding: 10px 25px;
     border-radius: 30px;
     background-color: black;
     border: none;
+    font-size: 16px;
     &:hover {
         cursor: pointer;
         background-color: #17202a;
         transition: 0.3s linear;
     }
+
+    @media (max-width: 768px) {
+        padding: 8px 15px; 
+        font-size: 14px;   
+        border-radius: 25px; 
+    }
+    @media (max-width: 480px){
+        font-size: 5px;
+        width: auto;
+        padding: 5px;
+    }
 `;
+
 
 const HomeButton = styled.button`${commonStyles}`;
 const Explore = styled.button`${commonStyles}`;
@@ -469,6 +486,12 @@ const PostButton = styled.button`
         opacity: 0.7;
         transition: 0.8s;
     }
+    
+    @media (max-width: 768px) {
+    font-size: 15px;
+    width: 100%;
+    height: 40px;
+    }
 `;
 
 const Image = styled.img`
@@ -495,6 +518,10 @@ const LogoutButton = styled.button`
     &:hover {
         background-color: #ff4d4d;
         color: white;
+    }
+    @media (max-width: 768px) {
+    width:30px;
+    height:30px;
     }
 `;
 
@@ -525,9 +552,18 @@ const ProfileArea = styled.div`
     }
 
     @media (max-width: 768px) {
-        align-self: flex-start;
-        margin-left: -10px;
-        margin-bottom: -17px;
+       max-width: 50px;      
+        height: 35px;     
+        margin-left: -15px;  
+        margin-top: 80vh;  
+        padding: 8px;       
+        border-radius: 30px; 
+        visibility: visible;
+
+        &:hover ${LogoutButton} {
+        visibility: visible;
+    }
+    
     }
 `;
 
@@ -541,9 +577,19 @@ const UserName = styled.div`
     font-size: 18px;
     font-weight: bold;
     padding: 15px;
+     @media (max-width: 768px) {
+     margin-left: 20px;
+}`;
 
-
+const PostTime = styled.div`
+  color: #cccccc;       
+  margin-left: 10px;    
+  font-size: 12px;       
+  opacity: 0.8;          
+  font-style: italic;   
+  display: inline-block; 
 `;
+
 
 const PostContainer = styled.div`
     display: flex;
@@ -599,11 +645,6 @@ const PostImage = styled.img`
     border: 1px solid white;
     border-radius: 10px;
 `;
-
-const currentUser = styled.div``;
-
-const DeleteIcon = styled.div``;
-
 
 
 const DeleteButton = styled.button`

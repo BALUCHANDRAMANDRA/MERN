@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import * as yup from 'yup';
+import logo from '../images/X-Logo.png';
 
 export const Register = ({ onClose }) => {
   const [showText, setShowText] = useState(false);
@@ -65,7 +66,7 @@ export const Register = ({ onClose }) => {
         onClose();
       }, 2000);
     } catch (error) {
-      // If validation or registration fails, catch the error
+  
       console.error('Registration error:', error);
       if (error.response) {
        
@@ -73,7 +74,7 @@ export const Register = ({ onClose }) => {
         console.error('Server response status:', error.response.status);
         setErrorMessage('Registration failed: ' + error.response.data.message); 
       } else if (error.request) {
-        // The request was made but no response was received
+        
         console.error('No response received:', error.request);
         setErrorMessage('Registration failed: No response received');
       } else {
@@ -97,7 +98,7 @@ export const Register = ({ onClose }) => {
           onMouseLeave={handleText}
           onClick={onClose}>X
         </Main>
-        <Img src="" alt="ximage" />
+        <Img src={logo} alt="ximage" />
         {showText && <CloseText>Close</CloseText>}
         <Create>Create your account</Create>
         <InputContainer>
@@ -200,15 +201,16 @@ const Main = styled.button`
 `;
 
 const Img = styled.img`
-    height: 100%;
-    width: 100%;
+    height: 50px;
+    width: 50px;
     margin-top: -20px;
-    margin-left: 480px;
 
     @media (max-width: 768px) {
         margin-left: 0;
         margin-top: 0;
-        width: auto;
+        width: 25px;
+        height: 25px;
+        margin-top: -20px;
     }
 `;
 

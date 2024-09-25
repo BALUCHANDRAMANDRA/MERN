@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import logo from '../images/X-Logo.png';
 
 export const Signin = ({ onClose }) => {
   const [showText, setShowText] = useState(false);
@@ -30,7 +31,7 @@ export const Signin = ({ onClose }) => {
       });
 
       if (response.data.data.token) {
-        localStorage.setItem('token', response.data.data.token);  // Store token in localStorage
+        localStorage.setItem('token', response.data.data.token);  
         navigate('/home');
       }
     } catch (error) {
@@ -49,7 +50,7 @@ export const Signin = ({ onClose }) => {
           onMouseLeave={handleText}
           onClick={onClose}>X
         </Main>
-        <Img src="" alt="ximage" />
+        <Img src={logo} alt="ximage" />
         {showText && <CloseText>Close</CloseText>}
         <T>Sign in to X</T>
 
@@ -144,16 +145,16 @@ const Main = styled.button`
 `;
 
 const Img = styled.img`
-    height: 100%;
-    width: 100%;
+    height: 50px;
+    width: 50px;
     margin-top: -20px;
-    margin-left: 480px;
 
     @media (max-width: 768px) {
-        margin: 0 auto; /* Center horizontally */
-        display: block; /* Ensures margin: auto works */
-        height: auto; /* Adjust height for responsiveness */
-        width: auto; /* Adjust width for responsiveness */
+        margin: 0 auto; 
+        display: block;
+        height: 25px;
+        width: 25px; 
+        margin-top: -20px;
     }
 `;
 
@@ -167,8 +168,8 @@ const T = styled.span`
         margin-top: 20px;
         margin-right: auto;
         font-size: 24px;
-        text-align: center; /* Center text */
-        display: block; /* Ensures text-align: center works */
+        text-align: center; 
+        display: block;
     }
 `;
 
